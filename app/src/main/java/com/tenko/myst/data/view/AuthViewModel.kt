@@ -9,6 +9,9 @@ import com.tenko.myst.data.api.ApiClient
 import com.tenko.myst.data.serializable.Token
 import com.tenko.myst.data.serializable.ForgotPasswordRequest
 import com.tenko.myst.data.serializable.UserCreate
+import com.tenko.myst.data.serializable.UserDelete
+import com.tenko.myst.data.serializable.UserResponse
+import com.tenko.myst.data.serializable.UserUpdate
 import com.tenko.myst.navigation.AppScreens
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -92,6 +95,37 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun resetPassword(token: String, newPassword: String, navController: NavController){
+        viewModelScope.launch {
+            isLoading = true
+            loginError = null
+            try {
+                // Usamos submitForm porque tu API espera Form(...)
+                val response = ApiClient.client.submitForm(
+                    url = "https://api-myst.onrender.com/auth/reset-password",
+                    formParameters = parameters {
+                        append("token", token)
+                        append("new_password", newPassword)
+                    }
+                )
+
+                if (response.status == HttpStatusCode.OK) {
+                    // Éxito: Navegamos al login o mostramos mensaje
+                    navController.navigate(AppScreens.LoginScreen.route) {
+                        popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                    }
+                } else {
+                    // Aquí capturamos el "Token inválido" o "Token expirado"
+                    loginError = "Error: ${response.status.description}"
+                }
+            } catch (e: Exception) {
+                loginError = "Error de conexión: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
     fun createUser(userData: UserCreate, navController: NavController){
         viewModelScope.launch {
             isLoading = true
@@ -112,6 +146,74 @@ class AuthViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 loginError = "Error de red: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun getUser(token: String){
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = ApiClient.client.get("https://api-myst.onrender.com/users/me") {
+                    // Enviamos el token de autenticación
+                    bearerAuth(token)
+                }
+                if (response.status == HttpStatusCode.OK) {
+                    val userProfile = response.body<UserResponse>()
+                    // Aquí puedes guardar el perfil en una variable de estado
+                    println("Usuario obtenido: ${userProfile.name}")
+                }
+            } catch (e: Exception) {
+                loginError = "Error al obtener perfil: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun updateUser(token: String, userId: Int, updateData: UserUpdate) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = ApiClient.client.patch("https://api-myst.onrender.com/users/$userId") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(updateData)
+                }
+                if (response.status == HttpStatusCode.OK) {
+                    val updatedUser = response.body<UserResponse>()
+                    println("Usuario actualizado: ${updatedUser.name}")
+                }
+            } catch (e: Exception) {
+                loginError = "Error al actualizar: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun deleteUser(token: String, passwordConfirm: String, navController: NavController) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = ApiClient.client.delete("https://api-myst.onrender.com/users/me") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(UserDelete(password = passwordConfirm))
+                }
+
+                if (response.status == HttpStatusCode.NoContent) {
+                    // Borrado exitoso, regresamos al inicio
+                    navController.navigate(AppScreens.LoginScreen.route) {
+                        popUpTo(0) // Limpia el historial de navegación
+                    }
+                } else if (response.status == HttpStatusCode.BadRequest) {
+                    loginError = "Contraseña incorrecta"
+                }
+            } catch (e: Exception) {
+                loginError = "Error: ${e.localizedMessage}"
             } finally {
                 isLoading = false
             }
