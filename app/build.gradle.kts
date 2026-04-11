@@ -33,6 +33,15 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/io.netty.versions.properties"
+            excludes += "mozilla/public-suffix-list.txt"
+        }
+    }
 }
 
 kotlin {
