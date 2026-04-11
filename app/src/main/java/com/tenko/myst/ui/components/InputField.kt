@@ -40,6 +40,42 @@ import com.tenko.myst.ui.theme.PompAndPower
 import com.tenko.myst.ui.theme.SweetGrey
 
 @Composable
+fun nameInput(showWarnings: Boolean = true): String {
+    var name by remember { mutableStateOf("") }
+    OutlinedTextField(
+        value = name,
+        onValueChange = {
+            name = it
+        },
+        label = { Text(text = "Nombres (sin apellidos)", fontSize = 14.sp) },
+        singleLine = true,
+        shape = RoundedCornerShape(12.dp),
+        trailingIcon = {
+            Icon(
+                modifier = Modifier.size(35.dp).padding(end = 4.dp),
+                painter = painterResource(id = R.drawable.user_regular_full),
+                contentDescription = "Icono de sobre"
+            )
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = AntiFlashWhite,
+            focusedBorderColor = PompAndPower,
+            unfocusedBorderColor = Color.Transparent,
+            focusedTrailingIconColor = PompAndPower,
+            unfocusedTrailingIconColor = SweetGrey,
+            unfocusedLabelColor = Color.Gray,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(66.dp)
+    )
+
+    Spacer(Modifier.height(8.dp))
+
+    return name
+}
+
+@Composable
 fun emailInput(showWarnings: Boolean = true): String {
     var email by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf(false) }

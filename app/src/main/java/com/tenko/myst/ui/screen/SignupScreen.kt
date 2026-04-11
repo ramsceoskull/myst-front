@@ -27,6 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.tenko.myst.data.view.AuthViewModel
+import com.tenko.myst.data.serializable.UserCreate
 import com.tenko.myst.R
 import com.tenko.myst.navigation.AppScreens
 import com.tenko.myst.regex.isValidEmail
@@ -35,6 +37,7 @@ import com.tenko.myst.ui.components.AutoScrollingCarousel
 import com.tenko.myst.ui.components.LoginRedirectText
 import com.tenko.myst.ui.components.TermsAndPrivacyText
 import com.tenko.myst.ui.components.emailInput
+import com.tenko.myst.ui.components.nameInput
 import com.tenko.myst.ui.components.passwordInput
 import com.tenko.myst.ui.theme.StarsLove
 import com.tenko.myst.ui.theme.SweetGrey
@@ -42,7 +45,7 @@ import com.tenko.myst.ui.theme.Tekhelet
 import com.tenko.myst.ui.theme.White
 
 @Composable
-fun SignupScreen(navController: NavController) {
+fun SignupScreen(navController: NavController, viewModel: AuthViewModel) {
     var acceptedTerms by remember { mutableStateOf(false) }
     var showTerms by remember { mutableStateOf(false) }
     /*val accepted = navController
@@ -88,14 +91,24 @@ fun SignupScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val email = emailInput()
-            val password = passwordInput()
-            val isFormValid = isValidEmail(email) && isValidPassword(password)
+            val nameValue = nameInput()
+            val emailValue = emailInput()
+            val passwordValue = passwordInput()
+            val isFormValid = isValidEmail(emailValue) && isValidPassword(passwordValue)
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { navController.navigate(AppScreens.ValidateEmailScreen.route) },
+                onClick = {
+                    val newUser = UserCreate(
+                        name = nameValue,
+                        email = emailValue,
+                        password = passwordValue,
+                        initials = nameValue.take(2).uppercase(),
+                        picture = null
+                    )
+                    viewModel.createUser(newUser, navController)
+                          },
                 enabled = isFormValid/* && acceptedTerms*/,
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(

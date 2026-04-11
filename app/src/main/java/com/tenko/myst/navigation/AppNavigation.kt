@@ -59,10 +59,10 @@ fun AppNavigation() {
     ) {  _ ->*/
     NavHost(
         navController = navController,
-        startDestination = AppScreens.MainScreen.route
+        startDestination = AppScreens.SplashScreen.route
     ) {
         composable(AppScreens.SplashScreen.route) { SplashScreen(navController) }
-        composable(AppScreens.SignupScreen.route) { SignupScreen(navController) }
+        composable(AppScreens.SignupScreen.route) { SignupScreen(navController, authViewModel) }
         composable(AppScreens.LoginScreen.route) { LoginScreen(navController, authViewModel) }
         composable(AppScreens.ProfileScreen.route) { ProfileScreen(navController) }
         composable(AppScreens.ChatScreen.route) { ChatScreen(navController) }

@@ -71,7 +71,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
         TextButton(
             modifier = Modifier.align(Alignment.End),
-            onClick = { navController.navigate(AppScreens.ForgotPasswordScreen.route) }
+            onClick = { if(isValidEmail(email)) viewModel.forgotPassword(email, navController) }
         ) {
             Text(
                 text = "¿Olvidaste tu contraseña?",
