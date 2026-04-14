@@ -18,21 +18,7 @@ import com.tenko.myst.ui.theme.AntiFlashWhite
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
-    LaunchedEffect(key1 = true) {
-        delay(5000)
-        navController.navigate(AppScreens.LoginScreen.route) {
-            popUpTo(AppScreens.SplashScreen.route) {
-                inclusive = true
-            }
-        }
-    }
-
-    Splash()
-}
-
-@Composable
-fun Splash() {
+fun SplashScreen() {
     Column(
         modifier = Modifier.fillMaxSize().background(AntiFlashWhite),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -49,5 +35,5 @@ fun Splash() {
 @Preview(showBackground = true)
 @Composable
 fun SplashScreenPreview() {
-    Splash()
+    SplashScreen()
 }
