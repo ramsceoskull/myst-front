@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,9 +29,9 @@ import com.tenko.myst.ui.theme.SweetGrey
 import com.tenko.myst.ui.theme.Tekhelet
 
 @Composable
-fun MenuItem(title: String, icon: ImageVector, color: Color = Tekhelet) {
+fun MenuItem(title: String, icon: Int, color: Color = Tekhelet, onclick: () -> Unit = {}) {
     Card(
-        onClick = {},
+        onClick = onclick,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = AntiFlashWhite),
         modifier = Modifier
@@ -43,7 +44,7 @@ fun MenuItem(title: String, icon: ImageVector, color: Color = Tekhelet) {
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, title, tint = color)
+            Icon(painter = painterResource(icon), contentDescription = title, tint = color)
 
             Spacer(modifier = Modifier.width(16.dp))
 
