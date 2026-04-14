@@ -1,30 +1,42 @@
 package com.tenko.myst.data.view
 
-import android.service.autofill.UserData
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.tenko.myst.data.api.ApiClient
-import com.tenko.myst.data.serializable.Token
+import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.serializable.ForgotPasswordRequest
+import com.tenko.myst.data.serializable.Token
 import com.tenko.myst.data.serializable.UserCreate
 import com.tenko.myst.data.serializable.UserDelete
 import com.tenko.myst.data.serializable.UserResponse
 import com.tenko.myst.data.serializable.UserUpdate
 import com.tenko.myst.navigation.AppScreens
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.delete
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.http.parameters
 import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
     var loginError by mutableStateOf<String?>(null)
     var tokenData by mutableStateOf<Token?>(null)
+    var currentUser by mutableStateOf<UserResponse?>(null)
+        private set
 
-    fun login(email: String, password: String, navController: NavController) {
+    fun login(email: String, password: String, navController: NavController, tokenManager: TokenManager) {
         viewModelScope.launch {
             isLoading = true
             loginError = null
@@ -32,14 +44,16 @@ class AuthViewModel : ViewModel() {
                 val response = ApiClient.client.submitForm(
                     url = "https://api-myst.onrender.com/auth/login",
                     formParameters = parameters {
-                        append("username", email)
-                        append("password", password)
+                        append("username", email.trim())
+                        append("password", password.trim())
                     }
                 )
 
                 if (response.status == HttpStatusCode.OK) {
                     tokenData = response.body<Token>()
-                    navController.navigate(AppScreens.MainScreen.route)
+                    tokenManager.saveToken(tokenData!!.access_token)
+                    ApiClient.clearAuthCache()
+                    fetchUserData(navController)
                     // Aquí guardarías el token (ej. en SharedPreferences o DataStore)
                 } else {
                     loginError = "Credenciales incorrectas"
@@ -47,8 +61,23 @@ class AuthViewModel : ViewModel() {
             } catch (e: Exception) {
                 loginError = "Error de conexión: ${e.localizedMessage}"
             } finally {
+                print("Token guardado: ${tokenData!!.access_token}")
                 isLoading = false
             }
+        }
+    }
+
+    private suspend fun fetchUserData(navController: NavController) {
+        try {
+            val response = ApiClient.client.get("https://api-myst.onrender.com/users/me")
+            if (response.status == HttpStatusCode.OK) {
+                currentUser = response.body<UserResponse>()
+                navController.navigate(AppScreens.MainScreen.route) {
+                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                }
+            }
+        } catch (e: Exception) {
+            println("Error cargando usuario: ${e.message}")
         }
     }
 
@@ -152,18 +181,15 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun getUser(token: String){
+    fun getUser(){
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = ApiClient.client.get("https://api-myst.onrender.com/users/me") {
-                    // Enviamos el token de autenticación
-                    bearerAuth(token)
-                }
+                val response = ApiClient.client.get("https://api-myst.onrender.com/users/me")
                 if (response.status == HttpStatusCode.OK) {
-                    val userProfile = response.body<UserResponse>()
+                    currentUser = response.body<UserResponse>()
                     // Aquí puedes guardar el perfil en una variable de estado
-                    println("Usuario obtenido: ${userProfile.name}")
+                    println("Usuario obtenido: ${currentUser?.name}")
                 }
             } catch (e: Exception) {
                 loginError = "Error al obtener perfil: ${e.localizedMessage}"
@@ -173,12 +199,11 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun updateUser(token: String, userId: Int, updateData: UserUpdate) {
+    fun updateUser(userId: Int, updateData: UserUpdate) {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = ApiClient.client.patch("https://api-myst.onrender.com/users/$userId") {
-                    bearerAuth(token)
+                val response = ApiClient.client.patch("https://api-myst.onrender.com/users/me") {
                     contentType(ContentType.Application.Json)
                     setBody(updateData)
                 }
@@ -194,17 +219,22 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun deleteUser(token: String, passwordConfirm: String, navController: NavController) {
+    fun deleteUser(passwordConfirm: String, tokenManager: TokenManager, navController: NavController) {
         viewModelScope.launch {
             isLoading = true
             try {
                 val response = ApiClient.client.delete("https://api-myst.onrender.com/users/me") {
-                    bearerAuth(token)
                     contentType(ContentType.Application.Json)
                     setBody(UserDelete(password = passwordConfirm))
                 }
 
                 if (response.status == HttpStatusCode.NoContent) {
+                    // 1. Borramos el token del celular
+                    tokenManager.deleteToken()
+
+                    // 2. Limpiamos el estado del usuario en el ViewModel
+                    currentUser = null
+
                     // Borrado exitoso, regresamos al inicio
                     navController.navigate(AppScreens.LoginScreen.route) {
                         popUpTo(0) // Limpia el historial de navegación
