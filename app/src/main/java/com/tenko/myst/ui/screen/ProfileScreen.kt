@@ -1,7 +1,5 @@
 package com.tenko.myst.ui.screen
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +19,6 @@ import androidx.compose.material.icons.filled.CardMembership
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
@@ -29,9 +26,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +37,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.tenko.myst.R
+import com.tenko.myst.data.serializable.UserResponse
+import com.tenko.myst.data.view.AuthViewModel
+import com.tenko.myst.navigation.AppScreens
 import com.tenko.myst.ui.components.ActionCard
 import com.tenko.myst.ui.components.AppTopBar
 import com.tenko.myst.ui.components.BottomNavigationBar
@@ -53,7 +54,12 @@ import com.tenko.myst.ui.theme.Tekhelet
 import com.tenko.myst.ui.theme.White
 
 @Composable
-fun ProfileScreen(navController: NavHostController) {
+fun ProfileScreen(navController: NavController, authViewModel: AuthViewModel) {
+    LaunchedEffect(Unit) {
+        authViewModel.getUser()
+    }
+    val user = authViewModel.currentUser
+
     Scaffold(
         topBar = {
             AppTopBar(
@@ -63,7 +69,7 @@ fun ProfileScreen(navController: NavHostController) {
                 actions = {
                     IconButton(onClick = { }) {
                         Icon(
-                            Icons.Default.MoreVert,
+                            painter = painterResource(R.drawable.ellipsis_vertical_solid_full),
                             contentDescription = "More options",
                             tint = Tekhelet
                         )
@@ -87,7 +93,7 @@ fun ProfileScreen(navController: NavHostController) {
         ) {
             Spacer(modifier = Modifier.height(30.dp))
 
-            ProfileSection()
+            ProfileSection(user)
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -98,7 +104,9 @@ fun ProfileScreen(navController: NavHostController) {
             MenuItem("Report History", Icons.Default.PictureAsPdf)
             MenuItem("Clinical History", Icons.Default.Folder)
             MenuItem("Help", Icons.Default.Help)
-            MenuItem("Editar Perfil", Icons.Default.Settings)
+            MenuItem("Editar Perfil", Icons.Default.Settings) {
+                    navController.navigate(AppScreens.UpdateProfileScreen.route)
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -106,10 +114,10 @@ fun ProfileScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ProfileSection() {
+fun ProfileSection(user: UserResponse?) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
-            painter = painterResource(R.drawable.mujer4),
+        AsyncImage(
+            model = "https://picsum.photos/400",
             contentDescription = "Profile Picture",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -120,7 +128,7 @@ fun ProfileSection() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Alessandra Wins",
+            text = user?.name ?: "Nombre de Usuario",
             fontSize = 32.sp,
             color = Tekhelet,
             fontWeight = FontWeight.SemiBold,
@@ -128,7 +136,7 @@ fun ProfileSection() {
         )
 
         Text(
-            text = "jacquelyn_fitzgerald@icloud.com",
+            text = user?.email ?: "Correo electrónico",
             color = SweetGrey,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
