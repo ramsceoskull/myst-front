@@ -8,6 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.tenko.myst.data.api.ApiClient
+import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.navigation.AppNavigation
 import com.tenko.myst.ui.theme.MystTheme
 
@@ -15,11 +17,13 @@ import com.tenko.myst.ui.theme.MystTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val tokenManager = TokenManager(applicationContext)
+        ApiClient.init(tokenManager)
         enableEdgeToEdge()
         setContent {
             MystTheme {
                 Scaffold( modifier = Modifier.fillMaxSize() ) { _ ->
-                    AppNavigation()
+                    AppNavigation(tokenManager)
                 }
             }
         }
