@@ -1,9 +1,12 @@
 package com.tenko.myst.navigation
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,6 +17,7 @@ import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.view.AuthViewModel
 import com.tenko.myst.data.view.MedicineViewModel
 import com.tenko.myst.data.view.NotificationViewModel
+import com.tenko.myst.data.view.ProfilePictureViewModel
 import com.tenko.myst.ui.components.NotificationsOverlay
 import com.tenko.myst.ui.screen.AddMedicationScreen
 import com.tenko.myst.ui.screen.AllNotificationsScreen
@@ -38,6 +42,9 @@ fun AppNavigation(tokenManager: TokenManager) {
     val notificationViewModel = viewModel<NotificationViewModel>()
     val authViewModel = viewModel<AuthViewModel>()
     val medicineViewModel = viewModel<MedicineViewModel>()
+    val profileViewModel = viewModel<ProfilePictureViewModel>()
+
+    val context = LocalContext.current
 
     // Observamos el token del DataStore
     val token by tokenManager.getToken.collectAsState(initial = "loading")
@@ -56,8 +63,8 @@ fun AppNavigation(tokenManager: TokenManager) {
                 composable(AppScreens.SplashScreen.route) { SplashScreen() }
                 composable(AppScreens.SignupScreen.route) { SignupScreen(navController, authViewModel) }
                 composable(AppScreens.LoginScreen.route) { LoginScreen(navController, authViewModel) }
-                composable(AppScreens.ProfileScreen.route) { ProfileScreen(navController,authViewModel) }
-                composable(AppScreens.UpdateProfileScreen.route) { UpdateProfileScreen(navController, authViewModel, tokenManager) }
+                composable(AppScreens.ProfileScreen.route) { ProfileScreen(navController,authViewModel, profileViewModel) }
+                composable(AppScreens.UpdateProfileScreen.route) { UpdateProfileScreen(navController, authViewModel, tokenManager, profileViewModel) }
                 composable(AppScreens.ChatScreen.route) { ChatScreen(navController) }
                 composable(AppScreens.CalendarScreen.route) { CalendarScreen(navController) }
                 composable(AppScreens.DoctorsScreen.route) { DoctorsScreen(navController) }
@@ -123,12 +130,30 @@ fun AppNavigation(tokenManager: TokenManager) {
                         onResendClick = { /* Lógica para reenviar el correo */ }
                     )
                 }
-                composable(AppScreens.ValidateEmailScreen.route) {
+                composable(
+                    route = AppScreens.ValidateEmailScreen.route,
+                    arguments = listOf(
+                        navArgument("emailId") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val email = backStackEntry.arguments?.getString("emailId")
+
                     EmailSentScreen(
                         title = "Confirma tu correo electrónico",
-                        description = "Hemos enviado un correo de confirmación a tu dirección. Por favor, revisa tu bandeja de entrada o tu carpeta de spam para activar tu cuenta.",
-                        actionLabel = "Iniciar Sesión",
-                        onClick = { navController.navigate(AppScreens.LoginScreen.route) },
+                        description = "Hemos enviado un correo de confirmación a ${email}. Por favor, revisa tu bandeja de entrada o tu carpeta de spam para activar tu cuenta.",
+                        actionLabel = "Abrir correo electrónico",
+                        onClick = {
+                            /*val emailIntent = Intent(Intent.ACTION_VIEW).apply {
+                                data = "content://com.android.email.provider".toUri()
+                            }
+
+                            if(emailIntent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(emailIntent)
+                            }*/
+                            navController.navigate(AppScreens.LoginScreen.route)
+                        },
                         onResendClick = { /* Lógica para reenviar el correo */ }
                     )
                 }
