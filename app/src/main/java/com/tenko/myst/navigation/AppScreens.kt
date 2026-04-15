@@ -11,8 +11,8 @@ sealed class AppScreens(val route: String) {
     object ChatScreen : AppScreens("chat_screen")
     object CalendarScreen : AppScreens("calendar_screen")
     object ForgotPasswordScreen : AppScreens("forgot_password_screen")
-    object ValidateEmailScreen : AppScreens("validate_email_screen")
-    object EmailSentScreen : AppScreens("email_sent_screen")
+    object ValidateEmailScreen : AppScreens("validate_email_screen/{emailId}")
+//    object EmailSentScreen : AppScreens("email_sent_screen")
     object NotificationsOverlay: AppScreens("notifications_overlay")
 
     object DoctorsScreen : AppScreens("doctors_screen")
