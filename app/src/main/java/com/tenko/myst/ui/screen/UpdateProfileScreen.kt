@@ -7,40 +7,68 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.view.AuthViewModel
+import com.tenko.myst.data.view.ProfilePictureViewModel
+import com.tenko.myst.launcher.rememberCameraLauncher
+import com.tenko.myst.launcher.rememberGalleryLauncher
 import com.tenko.myst.ui.components.AppTopBar
 import com.tenko.myst.ui.components.DeleteAccountRow
 import com.tenko.myst.ui.components.InfoRow
-import com.tenko.myst.ui.components.PhotoActionsRow
+import com.tenko.myst.ui.components.PhotoActionsSection
 import com.tenko.myst.ui.theme.Tekhelet
 import com.tenko.myst.ui.theme.White
+import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpdateProfileScreen(navController: NavController, viewModel: AuthViewModel, tokenManager: TokenManager) {
-    LaunchedEffect(Unit) {
-        viewModel.getUser()
-    }
+fun UpdateProfileScreen(navController: NavController, viewModel: AuthViewModel, tokenManager: TokenManager, profileViewModel: ProfilePictureViewModel) {
+    viewModel.getUser(navController)
+    val user = viewModel.currentUser
 
     var password by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
+    var showModal by remember { mutableStateOf(false) }
 
-    val user = viewModel.currentUser
+    val context = LocalContext.current
+    val photoUri by profileViewModel.photoUri.collectAsState()
+
+//    URI temporal para camara
+    val tempUri = remember {
+        val file = File.createTempFile("temp_photo", ".jpg", context.cacheDir)
+        FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+    }
+
+//    Launchers
+    val galleryLauncher = rememberGalleryLauncher {
+        profileViewModel.updatePhoto(it)
+    }
+    val cameraLauncher = rememberCameraLauncher(tempUri) { success ->
+        if(success)
+            profileViewModel.updatePhoto(tempUri)
+    }
 
     Scaffold(
         topBar = {
@@ -62,10 +90,10 @@ fun UpdateProfileScreen(navController: NavController, viewModel: AuthViewModel, 
                     .padding(16.dp)
                     .fillMaxSize()
             ) {
-                PhotoActionsRow(
-                    imageUrl = "https://picsum.photos/200",
-                    onEditClick = { /* Lógica para editar foto */ },
-                    onRemoveClick = { /* Lógica para eliminar foto */ }
+                PhotoActionsSection(
+                    imageUrl = photoUri?.toString(),
+                    onEditClick = { galleryLauncher.launch("image/*") },
+                    onRemoveClick = { profileViewModel.removePhoto() }
                 )
 
                 Text(
@@ -142,8 +170,11 @@ fun UpdateProfileScreen(navController: NavController, viewModel: AuthViewModel, 
                     },
                     confirmButton = {
                         TextButton(onClick = {
+                            println("--- MYST DEBUG: confirmar ---")
                             if(password.isNotBlank()) {
+                                println("--- MYST DEBUG: if---")
                                 viewModel.deleteUser(password, tokenManager, navController)
+                                println("--- MYST DEBUG: listo ---")
                                 showDialog = false
                             }
                         }) {
