@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.view.AuthViewModel
-import com.tenko.myst.navigation.AppScreens
 import com.tenko.myst.regex.isValidEmail
 import com.tenko.myst.regex.isValidPassword
 import com.tenko.myst.ui.components.AutoScrollingCarousel
@@ -89,7 +88,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { viewModel.login(email, password, navController, tokenManager) },
+                onClick = { viewModel.login(email.trim(), password.trim(), navController, tokenManager) },
                 enabled = isFormValid,
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
