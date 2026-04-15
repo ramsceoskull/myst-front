@@ -17,7 +17,6 @@ object ApiClient {
     @SuppressLint("StaticFieldLeak")
     private var tokenManager: TokenManager? = null
 
-    // Cambiamos a 'lateinit var' para poder reconfigurarlo si es necesario
     var client : HttpClient = createClient()
 
     fun init(manager: TokenManager) {
@@ -38,6 +37,11 @@ object ApiClient {
             })
         }
 
+        /*install(HttpTimeout) {
+            requestTimeoutMillis = 15000 // 15 segundos
+            connectTimeoutMillis = 15000
+        }*/
+
         install(Auth) {
             bearer {
                 // Evitamos que intente autenticar el login para no ensuciar el proceso
@@ -52,6 +56,11 @@ object ApiClient {
                         BearerTokens(token, "")
                     else
                         null
+                }
+
+                refreshTokens {
+                    tokenManager?.deleteToken()
+                    null
                 }
             }
         }
