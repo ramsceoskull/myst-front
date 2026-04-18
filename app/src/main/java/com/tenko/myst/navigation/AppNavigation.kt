@@ -15,10 +15,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.view.AuthViewModel
+import com.tenko.myst.data.view.DoctorViewModel
 import com.tenko.myst.data.view.MedicineViewModel
 import com.tenko.myst.data.view.NotificationViewModel
 import com.tenko.myst.data.view.ProfilePictureViewModel
 import com.tenko.myst.ui.components.NotificationsOverlay
+import com.tenko.myst.ui.screen.AddDoctorScreen
 import com.tenko.myst.ui.screen.AddMedicationScreen
 import com.tenko.myst.ui.screen.AllNotificationsScreen
 import com.tenko.myst.ui.screen.CalendarScreen
@@ -34,7 +36,6 @@ import com.tenko.myst.ui.screen.ProfileScreen
 import com.tenko.myst.ui.screen.SignupScreen
 import com.tenko.myst.ui.screen.SplashScreen
 import com.tenko.myst.ui.screen.UpdateProfileScreen
-import com.tenko.myst.ui.screen.doctorsList
 
 @Composable
 fun AppNavigation(tokenManager: TokenManager) {
@@ -43,6 +44,7 @@ fun AppNavigation(tokenManager: TokenManager) {
     val authViewModel = viewModel<AuthViewModel>()
     val medicineViewModel = viewModel<MedicineViewModel>()
     val profileViewModel = viewModel<ProfilePictureViewModel>()
+    val doctorViewModel = viewModel<DoctorViewModel>()
 
     val context = LocalContext.current
 
@@ -74,7 +76,7 @@ fun AppNavigation(tokenManager: TokenManager) {
                         onClose = { navController.popBackStack() },
                     )
                 }
-                composable(AppScreens.MainScreen.route) { MainScreen(navController, notificationViewModel, medicineViewModel) }
+                composable(AppScreens.MainScreen.route) { MainScreen(navController, notificationViewModel, medicineViewModel, profileViewModel, authViewModel) }
                 composable("terms") {
                     PdfViewerScreen(
                         pdfUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
@@ -157,7 +159,10 @@ fun AppNavigation(tokenManager: TokenManager) {
                         onResendClick = { /* Lógica para reenviar el correo */ }
                     )
                 }
-                composable(
+                composable(AppScreens.AddDoctorScreen.route){
+                    AddDoctorScreen(doctorViewModel, onBack = { navController.popBackStack() })
+                }
+                /*composable(
                     route = AppScreens.DoctorDetailsScreen.route,
                     arguments = listOf(
                         navArgument("doctorId") {
@@ -171,7 +176,7 @@ fun AppNavigation(tokenManager: TokenManager) {
                     doctor?.let {
                         DoctorDetailsScreen(navController, it)
                     }
-                }
+                }*/
             }
         }
     }
