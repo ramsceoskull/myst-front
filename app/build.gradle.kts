@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.auth)
+//    implementation(libs.cloudinary.android)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.firebase.appdistribution.gradle)
