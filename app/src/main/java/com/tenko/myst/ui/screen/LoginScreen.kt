@@ -1,5 +1,6 @@
 package com.tenko.myst.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.view.AuthViewModel
@@ -38,7 +40,7 @@ import com.tenko.myst.ui.theme.Tekhelet
 import com.tenko.myst.ui.theme.White
 
 @Composable
-fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
+fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
     val context = LocalContext.current
     val tokenManager = remember { TokenManager(context) }
 
@@ -48,7 +50,11 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             .background(White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(modifier = Modifier.padding(top = 60.dp).padding(horizontal = 25.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp).padding(horizontal = 25.dp)
+        ) {
             Text(
                 text = "Bienvenida de nuevo\na Myst",
                 color = Tekhelet,
@@ -56,7 +62,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 fontFamily = StarsLove,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                lineHeight = 45.sp
+                lineHeight = 45.sp,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -76,7 +83,12 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
             TextButton(
                 modifier = Modifier.align(Alignment.End),
-                onClick = { if(isValidEmail(email)) viewModel.forgotPassword(email, navController) }
+                onClick = {
+                    if(isValidEmail(email))
+                        viewModel.forgotPassword(email, navController)
+                    else
+                        Toast.makeText(context, "Por favor ingresa tu correo electrónico para recuperar tu contraseña", Toast.LENGTH_SHORT).show()
+                }
             ) {
                 Text(
                     text = "¿Olvidaste tu contraseña?",

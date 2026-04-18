@@ -26,11 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.tenko.myst.data.view.AuthViewModel
 import com.tenko.myst.data.serializable.UserCreate
-import com.tenko.myst.R
-import com.tenko.myst.navigation.AppScreens
+import com.tenko.myst.data.view.AuthViewModel
 import com.tenko.myst.regex.isValidEmail
 import com.tenko.myst.regex.isValidPassword
 import com.tenko.myst.ui.components.AutoScrollingCarousel
@@ -45,7 +44,7 @@ import com.tenko.myst.ui.theme.Tekhelet
 import com.tenko.myst.ui.theme.White
 
 @Composable
-fun SignupScreen(navController: NavController, viewModel: AuthViewModel) {
+fun SignupScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
     var acceptedTerms by remember { mutableStateOf(false) }
     var showTerms by remember { mutableStateOf(false) }
     /*val accepted = navController
@@ -62,7 +61,10 @@ fun SignupScreen(navController: NavController, viewModel: AuthViewModel) {
             .background(White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column( modifier = Modifier.padding(top = 60.dp).padding(horizontal = 25.dp) ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 60.dp, end = 25.dp, bottom = 15.dp, start = 25.dp)
+        ) {
             Text(
                 text = "Bienvenida\na Myst",
                 color = Tekhelet,
@@ -108,7 +110,7 @@ fun SignupScreen(navController: NavController, viewModel: AuthViewModel) {
                         picture = null
                     )
                     viewModel.createUser(newUser, navController)
-                          },
+                },
                 enabled = isFormValid/* && acceptedTerms*/,
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
