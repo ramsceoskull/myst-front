@@ -1,5 +1,7 @@
 package com.tenko.myst.data.view
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.tenko.myst.data.api.ApiClient
+import com.tenko.myst.data.api.CloudinaryClient.cloudinaryClient
 import com.tenko.myst.data.api.TokenManager
 import com.tenko.myst.data.serializable.ForgotPasswordRequest
 import com.tenko.myst.data.serializable.Token
@@ -17,6 +20,8 @@ import com.tenko.myst.data.serializable.UserUpdate
 import com.tenko.myst.navigation.AppScreens
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -24,10 +29,15 @@ import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class AuthViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
@@ -219,7 +229,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun updateUser(userId: Int, updateData: UserUpdate) {
+    fun updateUser(updateData: UserUpdate) {
         viewModelScope.launch {
             isLoading = true
             try {
@@ -264,6 +274,100 @@ class AuthViewModel : ViewModel() {
             } finally {
                 isLoading = false
             }
+        }
+    }
+
+    private suspend fun uploadToCloudinary(uri: Uri, context: Context): String? {
+        val cloudName = "dvnswwbwi"
+        val uploadPreset = "myst123"
+
+        return try {
+            // Obtenemos los bytes de la imagen
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val bytes = inputStream.readBytes()
+            inputStream.close()
+
+            val response = cloudinaryClient.post("https://api.cloudinary.com/v1_1/$cloudName/image/upload") {
+                setBody(MultiPartFormDataContent(
+                    formData {
+                        // 1. EL PRESET: Debe enviarse de la forma más simple posible
+                        append("upload_preset", uploadPreset)
+
+                        // 2. EL ARCHIVO: Asegúrate de que el nombre de la parte sea exactamente "file"
+                        append("file", bytes, Headers.build {
+                            append(HttpHeaders.ContentType, "image/jpeg")
+                            append(HttpHeaders.ContentDisposition, "form-data; name=\"file\"; filename=\"profile.jpg\"")
+                        })
+                    }
+                ))
+            }
+
+            val responseText = response.body<String>()
+
+            if (response.status == HttpStatusCode.OK) {
+                val json = Json.parseToJsonElement(responseText).jsonObject
+                // Extraemos la URL segura
+                json["secure_url"]?.jsonPrimitive?.content
+            } else {
+                println("ERROR_CLOUDINARY (${response.status}): $responseText")
+                null
+            }
+        } catch (e: Exception) {
+            println("EXCEPTION_CLOUDINARY: ${e.localizedMessage}")
+            null
+        }
+    }
+
+    fun updateProfilePicture(uri: Uri, context: Context) {
+        /*isLoading = true
+
+        // El SDK de Cloudinary maneja su propia corrutina,
+        // así que no hace falta meterlo todo en un launch si no quieres,
+        // pero lo usamos para controlar el estado de carga.
+        MediaManager.get().upload(uri)
+            .option("unsigned", true) // Indica que no usaremos API Secret (Seguro para Apps)
+            .option("upload_preset", "myst123") // El que vimos en tu captura
+            .option("folder", "user_profiles") // Carpeta de destino
+            .callback(object : UploadCallback {
+                override fun onStart(requestId: String?) { }
+
+                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) { }
+
+                override fun onSuccess(requestId: String?, resultData: Map<,>?) {
+                    // Cloudinary nos devuelve un mapa con los datos. Sacamos la URL.
+                    val uploadedUrl = resultData?.get("secure_url") as? String
+
+                    if (uploadedUrl != null) {
+                        // Ahora que tenemos la URL, llamamos a TU backend en Render
+                        viewModelScope.launch {
+                            updateUserWithUrl(UserUpdate(picture = uploadedUrl))
+                            isLoading = false
+                        }
+                    }
+                }
+
+                override fun onError(requestId: String?, error: ErrorInfo?) {
+                    isLoading = false
+                    loginError = "Error Cloudinary: ${error?.description}"
+                    println("CLOUDINARY_ERROR: ${error?.description}")
+                }
+
+                override fun onReschedule(requestId: String?, error: ErrorInfo?) { }
+            }).dispatch()*/
+    }
+
+    private suspend fun updateUserWithUrl(updateData: UserUpdate) {
+        try {
+            val response = ApiClient.client.patch("https://api-myst.onrender.com/users/me") {
+                contentType(ContentType.Application.Json)
+                setBody(updateData)
+            }
+            if (response.status == HttpStatusCode.OK) {
+                currentUser = response.body<UserResponse>()
+                println("¡Éxito! Perfil actualizado en Render.")
+            }
+        } catch (e: Exception) {
+            loginError = "Error en Render: ${e.localizedMessage}"
         }
     }
 }
