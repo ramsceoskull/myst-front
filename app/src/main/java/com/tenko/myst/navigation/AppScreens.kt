@@ -16,6 +16,7 @@ sealed class AppScreens(val route: String) {
     object NotificationsOverlay: AppScreens("notifications_overlay")
 
     object DoctorsScreen : AppScreens("doctors_screen")
+    object AddDoctorScreen : AppScreens("add_doctor_contact_screen")
     object DoctorDetailsScreen : AppScreens("doctor_details_screen/{doctorId}")
 
     object AllNotificationsScreen : AppScreens("all_notifications_screen")
