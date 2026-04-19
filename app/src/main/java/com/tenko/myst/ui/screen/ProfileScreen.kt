@@ -139,11 +139,11 @@ fun PlanAndInviteSection() {
             enabled = false
         )
 
-        ActionCard(
-            icon = Icons.Default.Favorite,
-            title = "Invita",
-            subtitle = "A amistades",
-            onClick = {  }
-        )
+//        ActionCard(
+//            icon = Icons.Default.Favorite,
+//            title = "Invita",
+//            subtitle = "A amistades",
+//            onClick = {  }
+//        )
     }
 }

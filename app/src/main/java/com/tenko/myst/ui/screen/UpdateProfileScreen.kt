@@ -89,7 +89,7 @@ fun UpdateProfileScreen(navController: NavController, tokenManager: TokenManager
         contract = ActivityResultContracts.GetContent()
     ) { uri : Uri? ->
         uri?.let {
-            viewModel.updateProfilePicture(it, context)
+            viewModel.updateProfilePicture(it)
         }
 
     }
