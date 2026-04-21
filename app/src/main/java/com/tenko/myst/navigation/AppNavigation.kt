@@ -27,6 +27,7 @@ import com.tenko.myst.ui.screen.MainScreen
 import com.tenko.myst.ui.screen.NotificationDetailScreen
 import com.tenko.myst.ui.screen.PdfViewerScreen
 import com.tenko.myst.ui.screen.ProfileScreen
+import com.tenko.myst.ui.screen.ReportsScreen
 import com.tenko.myst.ui.screen.SignupScreen
 import com.tenko.myst.ui.screen.SplashScreen
 import com.tenko.myst.ui.screen.UpdateProfileScreen
@@ -57,6 +58,7 @@ fun AppNavigation(tokenManager: TokenManager) {
                 composable(AppScreens.SignupScreen.route) { SignupScreen(navController) }
                 composable(AppScreens.LoginScreen.route) { LoginScreen(navController) }
                 composable(AppScreens.ProfileScreen.route) { ProfileScreen(navController) }
+                composable(AppScreens.ReportsScreen.route) { ReportsScreen(/*navController*/) }
                 composable(AppScreens.UpdateProfileScreen.route) { UpdateProfileScreen(navController, tokenManager) }
                 composable(AppScreens.ChatScreen.route) { ChatScreen(navController) }
                 composable(AppScreens.CalendarScreen.route) { CalendarScreen(navController) }
