@@ -19,6 +19,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import androidx.core.net.toUri
+import io.ktor.http.HttpHeaders
+import kotlin.random.Random
 
 class ReportViewModel : ViewModel() {
     // --- ESTADOS DE LA UI ---
@@ -45,12 +47,20 @@ class ReportViewModel : ViewModel() {
 
                 if (response.status == HttpStatusCode.OK) {
                     val pdfBytes: ByteArray = response.body()
-                    val fileName = if (cycleId == null) "reporte_clinico_${System.currentTimeMillis()}.pdf"
-                    else "ciclo_${cycleId}_${System.currentTimeMillis()}.pdf"
 
-                    // Subida a Firebase en la ruta reports/userId/fileName
-                    uploadPdfToFirebase(pdfBytes, fileName, userId)
-                    fetchSavedReports(userId) // Refrescar lista local
+                    // 1. Extraer nombre del header Content-Disposition o usar fallback
+                    val contentDisposition = response.headers[HttpHeaders.ContentDisposition]
+                    val fileName = contentDisposition?.let {
+                        // Busca la parte que dice filename="nombre.pdf"
+                        Regex("""filename="?([^"]+)"?""").find(it)?.groupValues?.get(1)
+                    } ?: (if (cycleId == null) "historial_clinico.pdf" else "cicloreporte.pdf")
+
+                    // 2. Añadir dígitos aleatorios antes de la extensión .pdf
+                    val randomDigits = Random.nextInt(10, 99) // Dos dígitos (ej. 42)
+                    val finalFileName = fileName.replace(".pdf", "$randomDigits.pdf")
+
+                    uploadPdfToFirebase(pdfBytes, finalFileName, userId)
+                    fetchSavedReports(userId)
                     true
                 } else false
             }
