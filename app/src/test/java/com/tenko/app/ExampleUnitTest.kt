@@ -1,4 +1,4 @@
-package com.tenko.myst
+package com.tenko.app
 
 import org.junit.Test
 
