@@ -20,9 +20,11 @@
         android:theme="@style/Theme.Myst" >
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="nosensor"
             android:exported="true"
             android:theme="@style/Theme.Myst"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize">
+<!--            tools:ignore="LockedOrientationActivity">-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
