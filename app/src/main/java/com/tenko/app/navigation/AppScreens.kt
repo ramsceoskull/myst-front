@@ -1,4 +1,4 @@
-package com.tenko.myst.navigation
+package com.tenko.app.navigation
 
 sealed class AppScreens(val route: String) {
     object MainScreen : AppScreens("main_screen")
@@ -8,11 +8,12 @@ sealed class AppScreens(val route: String) {
     object SignupScreen : AppScreens("signup_screen")
     object ProfileScreen : AppScreens("profile_screen")
     object ReportsScreen : AppScreens("reports_screen")
+    object ClinicalHistoryScreen : AppScreens("clinical_history_screen")
     object UpdateProfileScreen : AppScreens("update_profile_screen")
     object ChatScreen : AppScreens("chat_screen")
     object CalendarScreen : AppScreens("calendar_screen")
     object ForgotPasswordScreen : AppScreens("forgot_password_screen")
-    object ValidateEmailScreen : AppScreens("validate_email_screen/{emailId}")
+    object ValidateEmailScreen : AppScreens("validate_email_screen")
 //    object EmailSentScreen : AppScreens("email_sent_screen")
     object NotificationsOverlay: AppScreens("notifications_overlay")
 
