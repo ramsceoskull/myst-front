@@ -1,4 +1,4 @@
-package com.tenko.myst.ui.components
+package com.tenko.app.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.tenko.myst.ui.theme.PompAndPower
-import com.tenko.myst.ui.theme.Tekhelet
-import com.tenko.myst.ui.theme.White
+import com.tenko.app.ui.theme.BackgroundColor
+import com.tenko.app.ui.theme.PompAndPower
+import com.tenko.app.ui.theme.Tekhelet
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -47,7 +47,7 @@ fun BottomNavigationBar(navController: NavController) {
                 spotColor = Color.Black,
 //                clip = false
             ),
-            containerColor = White,
+            containerColor = BackgroundColor,
 //            tonalElevation = 30.dp
         ) {
             val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
