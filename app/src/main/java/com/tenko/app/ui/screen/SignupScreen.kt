@@ -1,16 +1,19 @@
-package com.tenko.myst.ui.screen
+package com.tenko.app.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -28,20 +31,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.tenko.myst.data.serializable.UserCreate
-import com.tenko.myst.data.view.AuthViewModel
-import com.tenko.myst.regex.isValidEmail
-import com.tenko.myst.regex.isValidPassword
-import com.tenko.myst.ui.components.AutoScrollingCarousel
-import com.tenko.myst.ui.components.LoginRedirectText
-import com.tenko.myst.ui.components.TermsAndPrivacyText
-import com.tenko.myst.ui.components.emailInput
-import com.tenko.myst.ui.components.nameInput
-import com.tenko.myst.ui.components.passwordInput
-import com.tenko.myst.ui.theme.StarsLove
-import com.tenko.myst.ui.theme.SweetGrey
-import com.tenko.myst.ui.theme.Tekhelet
-import com.tenko.myst.ui.theme.White
+import com.tenko.app.data.serializable.UserCreate
+import com.tenko.app.data.view.AuthViewModel
+import com.tenko.app.regex.isValidEmail
+import com.tenko.app.regex.isValidPassword
+import com.tenko.app.ui.components.AutoScrollingCarousel
+import com.tenko.app.ui.components.LoginRedirectText
+import com.tenko.app.ui.components.TermsAndPrivacyText
+import com.tenko.app.ui.components.emailInput
+import com.tenko.app.ui.components.nameInput
+import com.tenko.app.ui.components.passwordInput
+import com.tenko.app.ui.theme.StarsLove
+import com.tenko.app.ui.theme.SweetGrey
+import com.tenko.app.ui.theme.Tekhelet
+import com.tenko.app.ui.theme.White
 
 @Composable
 fun SignupScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
@@ -59,6 +62,7 @@ fun SignupScreen(navController: NavController, viewModel: AuthViewModel = viewMo
         modifier = Modifier
             .fillMaxSize()
             .background(White),
+//            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(modifier = Modifier
@@ -93,7 +97,7 @@ fun SignupScreen(navController: NavController, viewModel: AuthViewModel = viewMo
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val nameValue = nameInput()
+            val (nameValue, initialsValue) = nameInput()
             val emailValue = emailInput()
             val passwordValue = passwordInput()
             val isFormValid = isValidEmail(emailValue) && isValidPassword(passwordValue)
@@ -106,7 +110,7 @@ fun SignupScreen(navController: NavController, viewModel: AuthViewModel = viewMo
                         name = nameValue,
                         email = emailValue,
                         password = passwordValue,
-                        initials = nameValue.take(2).uppercase(),
+                        initials = if(initialsValue.length == 2) initialsValue else nameValue.take(2).uppercase(),
                         picture = null
                     )
                     viewModel.createUser(newUser, navController)
@@ -139,7 +143,10 @@ fun SignupScreen(navController: NavController, viewModel: AuthViewModel = viewMo
         Spacer(modifier = Modifier.height(24.dp))
 
         Column(
-            modifier = Modifier.fillMaxSize().navigationBarsPadding(),
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(bottom = 12.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
