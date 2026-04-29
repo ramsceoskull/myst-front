@@ -15,14 +15,19 @@ data class ReminderResponse(
     val description: String? = null,
 
     @Serializable(with = LocalDateSerializer::class)
-    val date: LocalDate? = null,
+    val start_date: LocalDate,
+
+    @Serializable(with = LocalDateSerializer::class)
+    val end_date: LocalDate,
 
     @Serializable(with = LocalTimeSerializer::class)
-    val time: LocalTime? = null,
+    val start_time: LocalTime,
 
-    val repeats: String? = null,
-    val type: String? = null,
-    val priority: String? = null,
+    @Serializable(with = LocalTimeSerializer::class)
+    val end_time: LocalTime,
 
-    val is_completed: String? = null
+    val type: Boolean? = null,
+    val dosage: String? = null,
+    val after_meal: Boolean? = null,
+    val status: Int? = null
 )
