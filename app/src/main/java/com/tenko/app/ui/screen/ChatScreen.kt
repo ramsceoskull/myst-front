@@ -148,7 +148,7 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = view
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 OutlinedButton(
-                                    onClick = { viewModel.sendMessage("Modificar historial"); showBottomInput = true },
+                                    onClick = { viewModel.sendMessage("Actualizar historial"); showBottomInput = true },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Tekhelet,
                                         contentColor = White,
@@ -159,7 +159,7 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel = view
                                 )
 
                                 OutlinedButton(
-                                    onClick = { viewModel.sendMessage("Daily log"); showBottomInput = true },
+                                    onClick = { viewModel.sendMessage("Mi día"); showBottomInput = true },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Tekhelet,
                                         contentColor = White,
