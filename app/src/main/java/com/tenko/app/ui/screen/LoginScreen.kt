@@ -1,4 +1,4 @@
-package com.tenko.myst.ui.screen
+package com.tenko.app.ui.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -25,19 +27,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.tenko.myst.data.api.TokenManager
-import com.tenko.myst.data.view.AuthViewModel
-import com.tenko.myst.regex.isValidEmail
-import com.tenko.myst.regex.isValidPassword
-import com.tenko.myst.ui.components.AutoScrollingCarousel
-import com.tenko.myst.ui.components.SignupRedirectText
-import com.tenko.myst.ui.components.emailInput
-import com.tenko.myst.ui.components.passwordInput
-import com.tenko.myst.ui.theme.PompAndPower
-import com.tenko.myst.ui.theme.StarsLove
-import com.tenko.myst.ui.theme.SweetGrey
-import com.tenko.myst.ui.theme.Tekhelet
-import com.tenko.myst.ui.theme.White
+import com.tenko.app.data.api.TokenManager
+import com.tenko.app.data.view.AuthViewModel
+import com.tenko.app.regex.isValidEmail
+import com.tenko.app.regex.isValidPassword
+import com.tenko.app.ui.components.AutoScrollingCarousel
+import com.tenko.app.ui.components.SignupRedirectText
+import com.tenko.app.ui.components.emailInput
+import com.tenko.app.ui.components.passwordInput
+import com.tenko.app.ui.theme.PompAndPower
+import com.tenko.app.ui.theme.StarsLove
+import com.tenko.app.ui.theme.SweetGrey
+import com.tenko.app.ui.theme.Tekhelet
+import com.tenko.app.ui.theme.White
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
@@ -47,7 +49,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewMod
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(White),
+            .background(White)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(

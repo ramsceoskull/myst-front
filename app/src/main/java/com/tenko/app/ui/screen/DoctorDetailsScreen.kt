@@ -1,6 +1,5 @@
-package com.tenko.myst.ui.screen
+package com.tenko.app.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,22 +26,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.tenko.myst.R
-import com.tenko.myst.data.model.Doctor
-import com.tenko.myst.ui.components.AppTopBar
-import com.tenko.myst.ui.theme.AntiFlashWhite
-import com.tenko.myst.ui.theme.PompAndPower
-import com.tenko.myst.ui.theme.SweetGrey
-import com.tenko.myst.ui.theme.White
+import com.tenko.app.R
+import com.tenko.app.data.model.Doctor
+import com.tenko.app.ui.components.AppTopBar
+import com.tenko.app.ui.theme.PompAndPower
+import com.tenko.app.ui.theme.White
 
 @Composable
 fun DoctorDetailsScreen(navController: NavHostController, doctor: Doctor) {

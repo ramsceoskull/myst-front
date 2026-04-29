@@ -1,9 +1,7 @@
-package com.tenko.myst.ui.screen
+package com.tenko.app.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,27 +13,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,14 +36,11 @@ import androidx.navigation.NavHostController
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.tenko.myst.data.model.CalendarEvent
-import com.tenko.myst.data.serializable.DailyLogCreate
-import com.tenko.myst.data.view.CycleViewModel
-import com.tenko.myst.ui.components.AddCalendarEvent
-import com.tenko.myst.ui.components.AppTopBar
-import com.tenko.myst.ui.components.BottomNavigationBar
-import com.tenko.myst.ui.components.DayBottomSheet
-import com.tenko.myst.ui.theme.White
+import com.tenko.app.data.serializable.DailyLogCreate
+import com.tenko.app.data.view.CycleViewModel
+import com.tenko.app.ui.components.AddCalendarEvent
+import com.tenko.app.ui.components.AppTopBar
+import com.tenko.app.ui.components.BottomNavigationBar
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -72,6 +61,7 @@ fun CalendarScreen(navController: NavHostController, viewModel: CycleViewModel =
         firstVisibleMonth = currentMonth,
         firstDayOfWeek = DayOfWeek.MONDAY
     )
+
     Scaffold(
         topBar = { AppTopBar(
             title = "Calendario",

@@ -1,4 +1,4 @@
-package com.tenko.myst.ui.theme
+package com.tenko.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -7,6 +7,8 @@ val PompAndPower = Color(0xFF8270AA)
 val Tekhelet = Color(0xFF4F338A)
 val RaisinBlack = Color(0xFF181421)
 val White = Color(0xFFFFFFFF)
+//val BackgroundColor = Color(0xFFF2F2F2)
+val BackgroundColor = Color(0xFFFFFFFF)
 val SweetGrey = Color(0xFFB9B9B9)
 
 val PeriodColor = Color(0xFFFF6FAE)

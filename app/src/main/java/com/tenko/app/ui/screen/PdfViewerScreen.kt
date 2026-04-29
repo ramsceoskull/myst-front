@@ -1,4 +1,4 @@
-package com.tenko.myst.ui.screen
+package com.tenko.app.ui.screen
 
 import android.annotation.SuppressLint
 import android.webkit.WebView
@@ -22,10 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import java.io.File
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +36,7 @@ fun PdfViewerScreen(
 ) {
     var accepted by remember { mutableStateOf(false) }
     var hasScrolledToEnd by remember { mutableStateOf(false) }
-    var scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
     val scrollPosition = scrollState.value
     val contentHeight = 1000 // Ajusta a la altura de tu contenido
 

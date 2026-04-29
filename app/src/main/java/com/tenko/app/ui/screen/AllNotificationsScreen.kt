@@ -1,4 +1,4 @@
-package com.tenko.myst.ui.screen
+package com.tenko.app.ui.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.tenko.myst.data.model.NotificationItem
-import com.tenko.myst.data.view.NotificationViewModel
-import com.tenko.myst.ui.components.NotificationRow
+import com.tenko.app.data.model.NotificationItem
+import com.tenko.app.data.view.NotificationViewModel
+import com.tenko.app.ui.components.NotificationRow
 
 @Composable
 fun AllNotificationsScreen(
