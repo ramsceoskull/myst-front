@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,7 +30,14 @@ import com.tenko.app.ui.components.AppTopBar
 import com.tenko.app.ui.components.BottomNavigationBar
 import com.tenko.app.ui.components.DoctorCard
 import com.tenko.app.ui.components.ReminderSmallItem
+import com.tenko.app.ui.theme.AntiFlashWhite
 import com.tenko.app.ui.theme.BackgroundColor
+import com.tenko.app.ui.theme.CardDark
+import com.tenko.app.ui.theme.CardGray
+import com.tenko.app.ui.theme.CardPurple
+import com.tenko.app.ui.theme.RaisinBlack
+import com.tenko.app.ui.theme.Tekhelet
+import com.tenko.app.ui.theme.White
 
 @Composable
 fun DoctorsScreen(
@@ -42,6 +50,7 @@ fun DoctorsScreen(
     }
 
     var selectedDoctorName by remember { mutableStateOf("") }
+    var currentDoctor = 0
 
     Scaffold(
         topBar = {
@@ -62,10 +71,20 @@ fun DoctorsScreen(
             item { Spacer(modifier = Modifier.height(12.dp)) }
 
             items(viewModel.contacts) { contact ->
-                DoctorCard(contact = contact) {
+                val colors = when (currentDoctor % 5) {
+                    0 -> listOf(CardGray, RaisinBlack, Color.Gray)
+                    1 -> listOf(CardPurple, White, AntiFlashWhite)
+                    2 -> listOf(Tekhelet, White, AntiFlashWhite)
+                    3 -> listOf(CardDark, White, AntiFlashWhite)
+                    else -> listOf(RaisinBlack, White, AntiFlashWhite)
+                }
+
+                DoctorCard(contact = contact, colors = colors) {
                     selectedDoctorName = "${contact.name} ${contact.last_name}"
                     viewModel.filterRemindersByContact(contact.id_contact)
                 }
+
+                currentDoctor++
             }
 
             item { Spacer(modifier = Modifier.height(30.dp)) }
