@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.Calendar
 
 fun scheduleMedicationAlarm(context: Context, startDate: LocalDate?, endDate: LocalDate?, hour: Int, minute: Int) {
@@ -17,19 +19,16 @@ fun scheduleMedicationAlarm(context: Context, startDate: LocalDate?, endDate: Lo
 
     val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-    // Ejemplo: Programar para mañana a las 8:00 AM
-    val calendar = Calendar.getInstance().apply {
-        timeInMillis = System.currentTimeMillis()
-        set(Calendar.HOUR_OF_DAY, hour)
-        set(Calendar.MINUTE, minute)
-        // Si hoy es después de la fecha de inicio, empezar mañana
-        // Si no, empezar en la fecha de inicio
-    }
+    val systemZone = ZoneId.systemDefault()
+    val zonedDateTime = LocalDate.now()
+        .atTime(hour, minute)
+        .atZone(systemZone)
 
-    // Alarmas exactas (requieren permiso SCHEDULE_EXACT_ALARM en Android 12+)
+    val triggerTime = zonedDateTime.toInstant()
+
     alarmManager.setRepeating(
         AlarmManager.RTC_WAKEUP,
-        calendar.timeInMillis,
+        triggerTime.toEpochMilli(),
         AlarmManager.INTERVAL_DAY, // Se repite cada día
         pendingIntent
     )
