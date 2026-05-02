@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tenko.app.R
 import com.tenko.app.ui.theme.Tekhelet
+import java.text.Normalizer
 
 fun isValidEmail(email: String): Boolean {
     val regex = Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
@@ -26,8 +27,10 @@ fun isValidEmail(email: String): Boolean {
 }
 
 fun isValidPassword(password: String): Boolean {
-    val regex = Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}\$")
-    return regex.matches(password)
+    val normalizedInput = Normalizer.normalize(password, Normalizer.Form.NFC)
+    val regex = Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[_\\W])(?!.* ).{8,16}\$")
+
+    return regex.matches(normalizedInput)
 }
 
 fun hasMinLength(password: String) = password.length in 8..16
@@ -41,7 +44,7 @@ fun hasNoSpaces(password: String) = !password.contains(" ")
 fun PasswordRequirement(text: String, isValid: Boolean) {
     val animatedColor by animateColorAsState(
         targetValue = if (isValid) Tekhelet else Color.Red,
-        label = "ColorAnimation",
+        label = "colorAnimation",
     )
 
     Row(
